@@ -1,0 +1,1451 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const questions = [
+  // ==========================================
+  // TOPIC 1: PERCENTAGE (PCT-001 to PCT-025)
+  // ==========================================
+  {
+    id: "PCT-001",
+    topic: "Percentage",
+    question: "If a number is increased by 20% and then the result is increased by 10%, what is the net percentage increase?",
+    options: {
+      A: "30%",
+      B: "32%",
+      C: "33.33%",
+      D: "28%"
+    },
+    correctAnswer: "B",
+    explanation: "Using the successive percentage formula: Net % = a + b + (a × b)/100.\nNet % = 20 + 10 + (20 × 10)/100 = 30 + 2 = 32%.\nAlternatively: 100 → 120 → 120 × 1.1 = 132 (a 32% rise).",
+    memoryTrick: "🧠 Shortcut: For successive rises of a% and b%, add them and add their product divided by 100: (a + b + ab/100)."
+  },
+  {
+    id: "PCT-002",
+    topic: "Percentage",
+    question: "If the price of sugar rises by 25%, by what percentage must a household reduce its consumption so that the total expenditure remains unchanged?",
+    options: {
+      A: "25%",
+      B: "16.67%",
+      C: "20%",
+      D: "22.5%"
+    },
+    correctAnswer: "C",
+    explanation: "Expenditure = Price × Consumption.\nReduction % = [r / (100 + r)] × 100.\nReduction % = [25 / (100 + 25)] × 100 = (25 / 125) × 100 = 20%.",
+    memoryTrick: "🧠 Fractional Shortcut: An increase of 1/x (25% = 1/4) requires a decrease of 1/(x + 1) (1/5 = 20%) to keep product constant."
+  },
+  {
+    id: "PCT-003",
+    topic: "Percentage",
+    question: "A's salary is 50% more than B's salary. By what percentage is B's salary less than A's salary?",
+    options: {
+      A: "50%",
+      B: "33.33%",
+      C: "40%",
+      D: "25%"
+    },
+    correctAnswer: "B",
+    explanation: "Let B's salary = 100, then A's salary = 150.\nDifference = 150 - 100 = 50.\nPercentage less = (Difference / A's salary) × 100 = (50 / 150) × 100 = 33.33%.",
+    memoryTrick: "🧠 Memory Rule: If A is 1/2 more than B, B is 1/(2+1) = 1/3 (33.33%) less than A. Base shifts to the larger quantity!"
+  },
+  {
+    id: "PCT-004",
+    topic: "Percentage",
+    question: "The population of a town was 120,000. It increased by 10% in the first year and by 20% in the second year. What is the population at the end of two years?",
+    options: {
+      A: "156,000",
+      B: "158,400",
+      C: "160,000",
+      D: "154,200"
+    },
+    correctAnswer: "B",
+    explanation: "End of Year 1: 120,000 × 1.10 = 132,000.\nEnd of Year 2: 132,000 × 1.20 = 158,400.\nDirectly: 120,000 × 1.1 × 1.2 = 120,000 × 1.32 = 158,400.",
+    memoryTrick: "🧠 Multiplier Rule: Successive multipliers compound directly: 1.10 × 1.20 = 1.32. Multiply 120k by 1.32."
+  },
+  {
+    id: "PCT-005",
+    topic: "Percentage",
+    question: "In an election between two candidates, the winner secured 65% of the total valid votes and won by a majority of 900 votes. What was the total number of valid votes cast?",
+    options: {
+      A: "3,000",
+      B: "2,700",
+      C: "3,500",
+      D: "4,000"
+    },
+    correctAnswer: "A",
+    explanation: "Winner % = 65%, so Loser % = 100% - 65% = 35%.\nWinning margin = 65% - 35% = 30% of total votes.\n30% of Total = 900 ⇒ Total = (900 × 100) / 30 = 3,000 votes.",
+    memoryTrick: "🧠 Margin Mnemonic: Margin % = Winner% - (100 - Winner%) = 2 × Winner% - 100%. Here, 2(65) - 100 = 30%."
+  },
+  {
+    id: "PCT-006",
+    topic: "Percentage",
+    question: "A student needs 35% marks to pass an examination. He scores 130 marks and fails by 10 marks. What are the maximum marks of the examination?",
+    options: {
+      A: "350",
+      B: "400",
+      C: "420",
+      D: "500"
+    },
+    correctAnswer: "B",
+    explanation: "Passing marks required = 130 + 10 = 140 marks.\nGiven that passing percentage = 35%.\n35% of Maximum Marks = 140 ⇒ Maximum Marks = (140 / 35) × 100 = 4 × 100 = 400.",
+    memoryTrick: "🧠 Step Formula: Pass Mark = Scored + Deficit. Then Total = Pass Mark / Pass% = 140 / 0.35 = 400."
+  },
+  {
+    id: "PCT-007",
+    topic: "Percentage",
+    question: "A man spends 75% of his income. His income increases by 20% and his expenditure increases by 10%. By what percentage do his savings increase?",
+    options: {
+      A: "40%",
+      B: "45%",
+      C: "50%",
+      D: "60%"
+    },
+    correctAnswer: "C",
+    explanation: "Assume initial Income = 100, Expenditure = 75, Savings = 25.\nNew Income = 120; New Expenditure = 75 × 1.10 = 82.5.\nNew Savings = 120 - 82.5 = 37.5.\nIncrease in savings = 37.5 - 25 = 12.5 ⇒ % Increase = (12.5 / 25) × 100 = 50%.",
+    memoryTrick: "🧠 Grid Method: Assume base 100. Write I = E + S (100 = 75 + 25). Update: 120 = 82.5 + 37.5. ΔS = 12.5 on 25 is exactly half (50%)."
+  },
+  {
+    id: "PCT-008",
+    topic: "Percentage",
+    question: "The value of a machine depreciates at the rate of 10% per annum. If its present value is Rs. 405,000, what was its value 2 years ago?",
+    options: {
+      A: "Rs. 450,000",
+      B: "Rs. 490,000",
+      C: "Rs. 500,000",
+      D: "Rs. 520,000"
+    },
+    correctAnswer: "C",
+    explanation: "Let original value = V.\nAfter 2 years depreciation at 10%: V × (1 - 0.10)² = 405,000.\nV × 0.81 = 405,000 ⇒ V = 405,000 / 0.81 = 500,000.",
+    memoryTrick: "🧠 Reverse Compounding: 10% drop twice = multiplier 0.9 × 0.9 = 0.81. Divide present value by 0.81."
+  },
+  {
+    id: "PCT-009",
+    topic: "Percentage",
+    question: "A 40-liter mixture of milk and water contains 10% water. How many liters of pure water must be added to make the water content 20% of the new mixture?",
+    options: {
+      A: "4 liters",
+      B: "5 liters",
+      C: "6 liters",
+      D: "8 liters"
+    },
+    correctAnswer: "B",
+    explanation: "Pure milk quantity remains constant: 90% of 40L = 36 liters of milk.\nIn the new mixture, water is 20%, so milk is 80%.\n80% of New Total = 36L ⇒ New Total = 36 / 0.80 = 45 liters.\nWater added = 45L - 40L = 5 liters.",
+    memoryTrick: "🧠 Constant Component Rule: Equate the ingredient that DOES NOT change! Milk₁ = Milk₂ → 40 × 90% = Total₂ × 80% → Total₂ = 45L."
+  },
+  {
+    id: "PCT-010",
+    topic: "Percentage",
+    question: "What is the percentage equivalent of the fraction 3/8?",
+    options: {
+      A: "32.5%",
+      B: "35%",
+      C: "37.5%",
+      D: "42.5%"
+    },
+    correctAnswer: "C",
+    explanation: "1/8 is known to be 12.5%.\nTherefore, 3/8 = 3 × 12.5% = 37.5%.\nAlgebraically: (3/8) × 100 = 300 / 8 = 37.5%.",
+    memoryTrick: "🧠 Standard Fraction: Memorize 1/8 = 12.5%. Multiply by 3 → 37.5%; multiply by 5 → 62.5%; multiply by 7 → 87.5%."
+  },
+  {
+    id: "PCT-011",
+    topic: "Percentage",
+    question: "The price of an item is first increased by 20% and then reduced by 20%. What is the net percentage change in the price?",
+    options: {
+      A: "0% (No change)",
+      B: "4% decrease",
+      C: "2% decrease",
+      D: "4% increase"
+    },
+    correctAnswer: "B",
+    explanation: "When a quantity is increased by x% and then decreased by x%, there is always a net decrease.\nNet change = - (x² / 100)% = - (20² / 100)% = -400 / 100 = -4% (a 4% decrease).\nVerification: 100 → 120 → 120 × 0.80 = 96.",
+    memoryTrick: "🧠 Golden Symmetrical Rule: Equal rise and fall of x% ALWAYS yields a net loss of (x/10)² %. Here, 2² = 4% loss."
+  },
+  {
+    id: "PCT-012",
+    topic: "Percentage",
+    question: "Two numbers are respectively 20% and 50% more than a third number. What percentage is the first number of the second number?",
+    options: {
+      A: "70%",
+      B: "75%",
+      C: "80%",
+      D: "85%"
+    },
+    correctAnswer: "C",
+    explanation: "Let third number = 100.\nFirst number = 120, Second number = 150.\nRequired % = (First / Second) × 100 = (120 / 150) × 100 = (4 / 5) × 100 = 80%.",
+    memoryTrick: "🧠 100-Benchmark: Always peg the reference number to 100. Then it simply reduces to 120/150 = 4/5 = 80%."
+  },
+  {
+    id: "PCT-013",
+    topic: "Percentage",
+    question: "Fresh fruit contains 68% water while dry fruit contains 20% water. How many kilograms of dry fruit can be obtained from 100 kg of fresh fruit?",
+    options: {
+      A: "32 kg",
+      B: "40 kg",
+      C: "48 kg",
+      D: "52 kg"
+    },
+    correctAnswer: "B",
+    explanation: "Pulp (dry matter) remains constant.\nIn 100 kg fresh fruit: Pulp = (100 - 68)% = 32% of 100 = 32 kg.\nIn dry fruit: Pulp = (100 - 20)% = 80%.\n80% of Dry Fruit = 32 kg ⇒ Dry Fruit = 32 / 0.80 = 40 kg.",
+    memoryTrick: "🧠 Pulp Invariance: Water evaporates, but solid pulp never changes! Pulp_fresh = Pulp_dry ⇒ 100 × 0.32 = Dry × 0.80 ⇒ Dry = 40 kg."
+  },
+  {
+    id: "PCT-014",
+    topic: "Percentage",
+    question: "If the length of a rectangle is increased by 30% and its breadth is decreased by 20%, what is the percentage change in its area?",
+    options: {
+      A: "+10%",
+      B: "+4%",
+      C: "-6%",
+      D: "+14%"
+    },
+    correctAnswer: "B",
+    explanation: "Area = Length × Breadth.\nNet change = a + b + (ab / 100) = 30 + (-20) + [30 × (-20)] / 100.\nNet change = 10 - 6 = +4% (an increase of 4%).",
+    memoryTrick: "🧠 Formula: (a + b + ab/100). Take positive for increase, negative for decrease: 30 - 20 - 6 = +4%."
+  },
+  {
+    id: "PCT-015",
+    topic: "Percentage",
+    question: "A student multiplied a number by 3/5 instead of 5/3. What is the percentage error in the calculation?",
+    options: {
+      A: "36%",
+      B: "44%",
+      C: "64%",
+      D: "56%"
+    },
+    correctAnswer: "C",
+    explanation: "Let the number be LCM of denominators (5 and 3) = 15.\nCorrect value = 15 × (5/3) = 25.\nCalculated value = 15 × (3/5) = 9.\nError = 25 - 9 = 16 ⇒ % Error = (16 / 25) × 100 = 64%.",
+    memoryTrick: "🧠 LCM Trick: Pick N = 15. Correct is 25, wrong is 9. Gap is 16. (16/25) × 100 = 64%."
+  },
+  {
+    id: "PCT-016",
+    topic: "Percentage",
+    question: "In an examination, 70% of candidates passed in English, 80% passed in Mathematics, and 10% failed in both subjects. If 144 candidates passed in both, find the total number of candidates.",
+    options: {
+      A: "240",
+      B: "200",
+      C: "250",
+      D: "300"
+    },
+    correctAnswer: "A",
+    explanation: "Failed in both = 10%, so passed in at least one subject = 100% - 10% = 90%.\nPassed English P(E) = 70%, Passed Math P(M) = 80%.\nP(E ∩ M) = P(E) + P(M) - P(E ∪ M) = 70% + 80% - 90% = 60%.\n60% of Total = 144 ⇒ Total = (144 / 60) × 100 = 240.",
+    memoryTrick: "🧠 Overlap Formula: Both Passed % = Pass(A) + Pass(B) - (100 - FailBoth). Here: 70 + 80 - 90 = 60%. Total = 144 / 0.60 = 240."
+  },
+  {
+    id: "PCT-017",
+    topic: "Percentage",
+    question: "If A's income is 25% less than B's income, by what percentage is B's income more than A's income?",
+    options: {
+      A: "25%",
+      B: "30%",
+      C: "33.33%",
+      D: "20%"
+    },
+    correctAnswer: "C",
+    explanation: "Let B = 100 ⇒ A = 75.\nExcess of B over A = 100 - 75 = 25.\nPercentage more = (25 / 75) × 100 = (1/3) × 100 = 33.33%.",
+    memoryTrick: "🧠 1/(n-1) Rule: A decrease of 1/n (25% = 1/4) corresponds to an increase of 1/(n - 1) (1/3 = 33.33%) from the smaller base."
+  },
+  {
+    id: "PCT-018",
+    topic: "Percentage",
+    question: "A reduction of 20% in the price of apples enables a man to buy 4 kg more for Rs. 160. What is the reduced price per kg?",
+    options: {
+      A: "Rs. 8",
+      B: "Rs. 10",
+      C: "Rs. 12",
+      D: "Rs. 6"
+    },
+    correctAnswer: "A",
+    explanation: "Money saved due to 20% price cut = 20% of 160 = Rs. 32.\nThis Rs. 32 buys the extra 4 kg.\nReduced price per kg = 32 / 4 = Rs. 8 per kg.",
+    memoryTrick: "🧠 Quick Formula: Reduced Price = (% reduction × Total Money) / Extra Quantity. (0.20 × 160) / 4 = 32 / 4 = Rs. 8."
+  },
+  {
+    id: "PCT-019",
+    topic: "Percentage",
+    question: "If 40% of (A + B) = 60% of (A - B), then what is the ratio of A to B?",
+    options: {
+      A: "5 : 1",
+      B: "3 : 2",
+      C: "4 : 1",
+      D: "5 : 2"
+    },
+    correctAnswer: "A",
+    explanation: "40(A + B) = 60(A - B) ⇒ 2(A + B) = 3(A - B).\n2A + 2B = 3A - 3B ⇒ 3A - 2A = 2B + 3B ⇒ A = 5B.\nTherefore, A / B = 5 / 1 ⇒ A : B = 5 : 1.",
+    memoryTrick: "🧠 Componendo-Dividendo shortcut: (A+B)/(A-B) = 60/40 = 3/2. Then A/B = (3+2)/(3-2) = 5/1."
+  },
+  {
+    id: "PCT-020",
+    topic: "Percentage",
+    question: "A candidate who gets 20% marks in an examination fails by 30 marks, but another candidate who gets 32% gets 42 marks more than the passing marks. What is the percentage of passing marks?",
+    options: {
+      A: "25%",
+      B: "28%",
+      C: "30%",
+      D: "33%"
+    },
+    correctAnswer: "A",
+    explanation: "Difference in % = 32% - 20% = 12%.\nDifference in marks = 42 - (-30) = 72 marks.\n12% = 72 marks ⇒ 1% = 6 marks ⇒ Total marks = 600.\nPassing marks = (20% of 600) + 30 = 120 + 30 = 150.\nPassing % = (150 / 600) × 100 = 25%.",
+    memoryTrick: "🧠 Delta Method: Δ% = ΔMarks. 12% = 72 marks → 1% = 6 marks. 30 marks = 5%. Pass% = 20% + 5% = 25%."
+  },
+  {
+    id: "PCT-021",
+    topic: "Percentage",
+    question: "If each side of a square is increased by 10%, by what percentage does its area increase?",
+    options: {
+      A: "20%",
+      B: "21%",
+      C: "22%",
+      D: "19%"
+    },
+    correctAnswer: "B",
+    explanation: "Area = Side².\nNet increase = 10 + 10 + (10 × 10)/100 = 20 + 1 = 21%.\nAlternatively: 1.1 × 1.1 = 1.21 (a 21% increase).",
+    memoryTrick: "🧠 Square Power Rule: 1.1² = 1.21 → exactly 21% increase."
+  },
+  {
+    id: "PCT-022",
+    topic: "Percentage",
+    question: "The salary of a person is reduced by 10%. By what percentage must his reduced salary be raised so as to bring it at par with his original salary?",
+    options: {
+      A: "10%",
+      B: "11.11%",
+      C: "12.5%",
+      D: "9.09%"
+    },
+    correctAnswer: "B",
+    explanation: "Original = 100, Reduced = 90.\nRequired increase = 10.\n% Increase on reduced base = (10 / 90) × 100 = (1 / 9) × 100 = 11.11%.",
+    memoryTrick: "🧠 1/9 fraction: Drop of 1/10 requires rise of 1/(10 - 1) = 1/9 = 11.11%."
+  },
+  {
+    id: "PCT-023",
+    topic: "Percentage",
+    question: "In a library, 20% of books are in Hindi, 50% of the remaining are in English, and the remaining 7,200 books are in regional languages. What is the total number of books?",
+    options: {
+      A: "18,000",
+      B: "16,000",
+      C: "20,000",
+      D: "14,400"
+    },
+    correctAnswer: "A",
+    explanation: "Remaining after Hindi (20%) = 80%.\nEnglish = 50% of 80% = 40% of total.\nRemaining for regional = 80% - 40% = 40% of total.\n40% of Total = 7,200 ⇒ Total = (7,200 / 40) × 100 = 18,000.",
+    memoryTrick: "🧠 Chain Fraction: Total × (1 - 0.20) × (1 - 0.50) = 7,200 ⇒ Total × 0.8 × 0.5 = 7,200 ⇒ Total × 0.4 = 7,200 ⇒ Total = 18,000."
+  },
+  {
+    id: "PCT-024",
+    topic: "Percentage",
+    question: "If x is 80% of y, then what percentage of 2x is y?",
+    options: {
+      A: "62.5%",
+      B: "50%",
+      C: "75%",
+      D: "80%"
+    },
+    correctAnswer: "A",
+    explanation: "Given x = 0.80y ⇒ x / y = 4 / 5.\nSo 2x = 2(4) = 8, while y = 5.\nRequired % = (y / 2x) × 100 = (5 / 8) × 100 = 62.5%.",
+    memoryTrick: "🧠 Value Substitution: If y = 100, x = 80, 2x = 160. (100 / 160) × 100 = 5/8 = 62.5%."
+  },
+  {
+    id: "PCT-025",
+    topic: "Percentage",
+    question: "The price of petrol increased by 25%. If a driver wants to spend only 10% extra on petrol, by what percentage should he reduce his consumption?",
+    options: {
+      A: "12%",
+      B: "15%",
+      C: "10%",
+      D: "14%"
+    },
+    correctAnswer: "A",
+    explanation: "Let original Price = 100, Consumption = 100 ⇒ Expenditure = 10,000.\nNew Price = 125. Allowed Expenditure = 100 + 10% = 110 (or 11,000).\nNew Consumption = 11,000 / 125 = 88.\nReduction in consumption = 100 - 88 = 12%.",
+    memoryTrick: "🧠 Ratio Formulation: Consumption factor = New Exp / New Price = 110 / 125 = 22 / 25 = 88/100 → 12% drop."
+  },
+
+  // ==========================================
+  // TOPIC 2: RATIO & PROPORTION (RAT-001 to RAT-025)
+  // ==========================================
+  {
+    id: "RAT-001",
+    topic: "Ratio & Proportion",
+    question: "If A : B = 3 : 4 and B : C = 8 : 9, what is the ratio A : C?",
+    options: {
+      A: "1 : 2",
+      B: "2 : 3",
+      C: "3 : 2",
+      D: "4 : 5"
+    },
+    correctAnswer: "B",
+    explanation: "A/C = (A/B) × (B/C).\nA/C = (3/4) × (8/9) = (3 × 8) / (4 × 9) = 24 / 36 = 2 / 3.\nTherefore, A : C = 2 : 3.",
+    memoryTrick: "🧠 Bridge Multiplication: Cancel common term B by direct fraction product: (3/4) × (8/9) = 2/3."
+  },
+  {
+    id: "RAT-002",
+    topic: "Ratio & Proportion",
+    question: "If A : B = 2 : 3, B : C = 4 : 5, and C : D = 6 : 7, what is A : B : C : D?",
+    options: {
+      A: "16 : 24 : 30 : 35",
+      B: "12 : 18 : 24 : 28",
+      C: "16 : 20 : 25 : 30",
+      D: "8 : 12 : 15 : 21"
+    },
+    correctAnswer: "A",
+    explanation: "Equalize connecting terms:\nA : B = 2 : 3 = 16 : 24 (multiply by 8)\nB : C = 4 : 5 = 24 : 30 (multiply by 6)\nC : D = 6 : 7 = 30 : 35 (multiply by 5)\nThus, A : B : C : D = 16 : 24 : 30 : 35.",
+    memoryTrick: "🧠 Down & Up Stairs Method: Fill empty slots horizontally with nearest neighbor to cross-multiply effortlessly."
+  },
+  {
+    id: "RAT-003",
+    topic: "Ratio & Proportion",
+    question: "What is the mean proportional between 9 and 25?",
+    options: {
+      A: "17",
+      B: "15",
+      C: "22.5",
+      D: "12.5"
+    },
+    correctAnswer: "B",
+    explanation: "The mean proportional 'x' between two numbers a and b satisfies x² = a × b.\nx = √(9 × 25) = √225 = 15.",
+    memoryTrick: "🧠 Geometric Mean: Mean proportional is simply the square root of product: √(9 × 25) = 3 × 5 = 15."
+  },
+  {
+    id: "RAT-004",
+    topic: "Ratio & Proportion",
+    question: "What is the third proportional to 16 and 24?",
+    options: {
+      A: "32",
+      B: "36",
+      C: "40",
+      D: "48"
+    },
+    correctAnswer: "B",
+    explanation: "If x is the third proportional to a and b, then a : b = b : x.\n16 / 24 = 24 / x ⇒ x = (24 × 24) / 16 = 576 / 16 = 36.",
+    memoryTrick: "🧠 Third Proportional Formula: x = b² / a. Here: 24² / 16 = (24/4)² / 1 = 6² = 36."
+  },
+  {
+    id: "RAT-005",
+    topic: "Ratio & Proportion",
+    question: "What is the fourth proportional to 4, 9, and 12?",
+    options: {
+      A: "24",
+      B: "27",
+      C: "30",
+      D: "36"
+    },
+    correctAnswer: "B",
+    explanation: "If x is the fourth proportional to a, b, and c, then a : b = c : x.\n4 / 9 = 12 / x ⇒ 4x = 9 × 12 ⇒ x = (9 × 12) / 4 = 27.",
+    memoryTrick: "🧠 Formula: Fourth proportional x = (b × c) / a. Here: (9 × 12) / 4 = 9 × 3 = 27."
+  },
+  {
+    id: "RAT-006",
+    topic: "Ratio & Proportion",
+    question: "A bag contains 50p, 25p, and 10p coins in the ratio 5 : 9 : 4, amounting to Rs. 206 in total. How many 50p coins are there in the bag?",
+    options: {
+      A: "180",
+      B: "200",
+      C: "220",
+      D: "240"
+    },
+    correctAnswer: "B",
+    explanation: "Value per unit ratio = (5 × 0.50) + (9 × 0.25) + (4 × 0.10) = 2.50 + 2.25 + 0.40 = Rs. 5.15.\nNumber of ratio units = 206 / 5.15 = 40.\nNumber of 50p coins = 5 × 40 = 200 coins.",
+    memoryTrick: "🧠 Unit Basket Value: Find value of one composite set: 5(0.5) + 9(0.25) + 4(0.1) = 5.15. Divide total cash by 5.15 = 40 sets. 40 × 5 = 200."
+  },
+  {
+    id: "RAT-007",
+    topic: "Ratio & Proportion",
+    question: "The present ages of a father and his son are in the ratio 7 : 3. Ten years ago, the ratio was 3 : 1. What is the present age of the son?",
+    options: {
+      A: "25 years",
+      B: "28 years",
+      C: "30 years",
+      D: "35 years"
+    },
+    correctAnswer: "C",
+    explanation: "Let present ages be 7x and 3x.\n(7x - 10) / (3x - 10) = 3 / 1.\n7x - 10 = 9x - 30 ⇒ 2x = 20 ⇒ x = 10.\nSon's present age = 3x = 3 × 10 = 30 years.",
+    memoryTrick: "🧠 Cross-Difference Trick: Age difference remains constant forever! (7-3=4) vs (3-1=2). Multiply 3:1 by 2 → 6:2. Present 7:3 to 6:2 is 1 unit = 10 yrs → Son = 3×10 = 30."
+  },
+  {
+    id: "RAT-008",
+    topic: "Ratio & Proportion",
+    question: "A and B enter into a partnership. A invests Rs. 12,000 for 8 months and B invests Rs. 16,000 for 6 months. In what ratio will they divide their total annual profit?",
+    options: {
+      A: "1 : 1",
+      B: "3 : 4",
+      C: "4 : 3",
+      D: "2 : 3"
+    },
+    correctAnswer: "A",
+    explanation: "Profit is shared in the ratio of (Investment × Time).\nA's share : B's share = (12,000 × 8) : (16,000 × 6) = 96,000 : 96,000 = 1 : 1.",
+    memoryTrick: "🧠 Golden Partnership Law: Profit Ratio = Capital × Time. Both produced 96,000 rupee-months → exactly 1:1."
+  },
+  {
+    id: "RAT-009",
+    topic: "Ratio & Proportion",
+    question: "The incomes of A and B are in the ratio 5 : 4 and their expenditures are in the ratio 3 : 2. If each saves Rs. 800 at the end of the month, what is A's monthly income?",
+    options: {
+      A: "Rs. 1,600",
+      B: "Rs. 2,000",
+      C: "Rs. 2,400",
+      D: "Rs. 2,800"
+    },
+    correctAnswer: "B",
+    explanation: "Income = 5x, 4x. Expenditure = 5x - 800, 4x - 800.\n(5x - 800) / (4x - 800) = 3 / 2.\n2(5x - 800) = 3(4x - 800) ⇒ 10x - 1600 = 12x - 2400 ⇒ 2x = 800 ⇒ x = 400.\nA's income = 5x = 5 × 400 = Rs. 2,000.",
+    memoryTrick: "🧠 Parallel Steps: Income ratio 5:4, Expenditure 3:2. Both dropped by 2 ratio units! 2 units = 800 ⇒ 1 unit = 400. A's income = 5 × 400 = 2000."
+  },
+  {
+    id: "RAT-010",
+    topic: "Ratio & Proportion",
+    question: "A mixture of 60 liters contains milk and water in the ratio 2 : 1. How many liters of water must be added to make the ratio 1 : 2?",
+    options: {
+      A: "40 liters",
+      B: "50 liters",
+      C: "60 liters",
+      D: "80 liters"
+    },
+    correctAnswer: "C",
+    explanation: "Initial milk = (2/3) × 60 = 40 liters; initial water = (1/3) × 60 = 20 liters.\nMilk stays at 40 liters in new mixture.\nIn new ratio (1 : 2), 1 part = 40 liters ⇒ 2 parts of water = 2 × 40 = 80 liters.\nWater to add = 80 - 20 = 60 liters.",
+    memoryTrick: "🧠 Constant Component: Milk is unchanged at 40L. If new ratio requires twice as much water as milk, target water is 2 × 40 = 80L. Add 80 - 20 = 60L."
+  },
+  {
+    id: "RAT-011",
+    topic: "Ratio & Proportion",
+    question: "If 2A = 3B = 4C, what is the ratio A : B : C?",
+    options: {
+      A: "2 : 3 : 4",
+      B: "4 : 3 : 2",
+      C: "6 : 4 : 3",
+      D: "3 : 4 : 6"
+    },
+    correctAnswer: "C",
+    explanation: "Let 2A = 3B = 4C = k (or LCM of 2, 3, 4 = 12).\nA = 12 / 2 = 6, B = 12 / 3 = 4, C = 12 / 4 = 3.\nTherefore, A : B : C = 6 : 4 : 3.",
+    memoryTrick: "🧠 LCM Inversion: Find LCM(2,3,4) = 12. Divide LCM by each coefficient: 12/2 : 12/3 : 12/4 = 6 : 4 : 3."
+  },
+  {
+    id: "RAT-012",
+    topic: "Ratio & Proportion",
+    question: "What number must be added to each of 6, 14, 18, and 38 so that the resulting numbers are in proportion?",
+    options: {
+      A: "1",
+      B: "2",
+      C: "3",
+      D: "4"
+    },
+    correctAnswer: "B",
+    explanation: "(6 + x) / (14 + x) = (18 + x) / (38 + x).\n(6 + x)(38 + x) = (14 + x)(18 + x).\n228 + 44x + x² = 252 + 32x + x² ⇒ 12x = 24 ⇒ x = 2.",
+    memoryTrick: "🧠 Determinant Formula: x = (ad - bc) / [(b + c) - (a + d)] = (6×38 - 14×18) / [(14+18) - (6+38)] = (228 - 252) / (32 - 44) = -24 / -12 = 2."
+  },
+  {
+    id: "RAT-013",
+    topic: "Ratio & Proportion",
+    question: "The duplicate ratio of 3 : 4 is:",
+    options: {
+      A: "√3 : 2",
+      B: "9 : 16",
+      C: "27 : 64",
+      D: "6 : 8"
+    },
+    correctAnswer: "B",
+    explanation: "The duplicate ratio of any ratio a : b is defined as a² : b².\nHere, 3² : 4² = 9 : 16.",
+    memoryTrick: "🧠 Vocabulary Rule: Duplicate = Square (a²:b²); Triplicate = Cube (a³:b³); Sub-duplicate = Square Root (√a:√b)."
+  },
+  {
+    id: "RAT-014",
+    topic: "Ratio & Proportion",
+    question: "The speeds of three cars are in the ratio 2 : 3 : 4. What is the ratio of time taken by them to travel the same distance?",
+    options: {
+      A: "4 : 3 : 2",
+      B: "6 : 4 : 3",
+      C: "2 : 3 : 4",
+      D: "3 : 4 : 6"
+    },
+    correctAnswer: "B",
+    explanation: "For constant distance, Time is inversely proportional to Speed (Time ∝ 1 / Speed).\nRatio of time = 1/2 : 1/3 : 1/4.\nMultiply by LCM(2, 3, 4) = 12: (12/2) : (12/3) : (12/4) = 6 : 4 : 3.",
+    memoryTrick: "🧠 Inverse LCM Rule: When variables are inverse, take reciprocal and multiply by LCM: 1/2 : 1/3 : 1/4 × 12 = 6 : 4 : 3."
+  },
+  {
+    id: "RAT-015",
+    topic: "Ratio & Proportion",
+    question: "Divide Rs. 1,170 among A, B, and C in the ratio 1/2 : 1/3 : 1/4. What is B's share?",
+    options: {
+      A: "Rs. 540",
+      B: "Rs. 360",
+      C: "Rs. 270",
+      D: "Rs. 400"
+    },
+    correctAnswer: "B",
+    explanation: "Multiply ratio by LCM(2, 3, 4) = 12 ⇒ 6 : 4 : 3.\nTotal ratio parts = 6 + 4 + 3 = 13 parts.\n1 part = 1,170 / 13 = Rs. 90.\nB's share = 4 parts = 4 × 90 = Rs. 360.",
+    memoryTrick: "🧠 Clean Integer Conversion: Always eliminate fractional ratios first by multiplying by denominator LCM."
+  },
+  {
+    id: "RAT-016",
+    topic: "Ratio & Proportion",
+    question: "Two vessels contain milk and water in the ratios 4 : 3 and 2 : 3 respectively. In what ratio should the liquids be mixed so that the new mixture has equal milk and water (1 : 1)?",
+    options: {
+      A: "7 : 5",
+      B: "5 : 7",
+      C: "3 : 5",
+      D: "4 : 5"
+    },
+    correctAnswer: "A",
+    explanation: "Fraction of milk in Vessel 1 = 4/7; Vessel 2 = 2/5; Desired = 1/2.\nUsing Alligation: (1/2 - 2/5) : (4/7 - 1/2) = (1/10) : (1/14).\nRatio = 14 : 10 = 7 : 5.",
+    memoryTrick: "🧠 Alligation Cross: Compare milk fraction to target (1/2): |4/7 - 1/2| = 1/14; |2/5 - 1/2| = 1/10. Cross ratio = 1/10 : 1/14 = 14 : 10 = 7 : 5."
+  },
+  {
+    id: "RAT-017",
+    topic: "Ratio & Proportion",
+    question: "Two numbers are in the ratio 7 : 11. If 7 is added to each number, the ratio becomes 2 : 3. What is the smaller number?",
+    options: {
+      A: "35",
+      B: "49",
+      C: "28",
+      D: "42"
+    },
+    correctAnswer: "B",
+    explanation: "Let the numbers be 7x and 11x.\n(7x + 7) / (11x + 7) = 2 / 3.\n3(7x + 7) = 2(11x + 7) ⇒ 21x + 21 = 22x + 14 ⇒ x = 7.\nSmaller number = 7x = 7 × 7 = 49.",
+    memoryTrick: "🧠 Cross Multiplication: (7x + 7)/(11x + 7) = 2/3. Direct cross product difference: (3×21 - 2×22)x = 2(7) - 3(7) → -x = -7 → x=7."
+  },
+  {
+    id: "RAT-018",
+    topic: "Ratio & Proportion",
+    question: "A dog takes 4 leaps for every 5 leaps of a hare, but 3 leaps of the dog are equal to 4 leaps of the hare. What is the ratio of speed of the dog to that of the hare?",
+    options: {
+      A: "15 : 16",
+      B: "16 : 15",
+      C: "12 : 15",
+      D: "5 : 4"
+    },
+    correctAnswer: "B",
+    explanation: "Let 1 leap of dog = d, 1 leap of hare = h. Given 3d = 4h ⇒ d/h = 4/3.\nSpeed = Leaps per unit time × Distance per leap.\nSpeed(dog) / Speed(hare) = (4 × d) / (5 × h) = (4/5) × (d/h) = (4/5) × (4/3) = 16 / 15.",
+    memoryTrick: "🧠 Cross-Multiplier Leaps: Dog Leaps × Hare Equivalent = 4 × 4 = 16. Hare Leaps × Dog Equivalent = 5 × 3 = 15. Speed = 16 : 15."
+  },
+  {
+    id: "RAT-019",
+    topic: "Ratio & Proportion",
+    question: "If y varies directly as x, and y = 12 when x = 4, what is the value of y when x = 9?",
+    options: {
+      A: "18",
+      B: "24",
+      C: "27",
+      D: "36"
+    },
+    correctAnswer: "C",
+    explanation: "Direct variation means y = kx.\nWhen y = 12 and x = 4: k = 12 / 4 = 3.\nWhen x = 9: y = 3 × 9 = 27.",
+    memoryTrick: "🧠 Direct Proportion Rule: y₁/x₁ = y₂/x₂ ⇒ 12/4 = y/9 ⇒ 3 = y/9 ⇒ y = 27."
+  },
+  {
+    id: "RAT-020",
+    topic: "Ratio & Proportion",
+    question: "Three glasses of equal volume contain mixtures of milk and water in the ratios 2 : 1, 3 : 1, and 3 : 2. If all three are poured into a single container, what is the ratio of milk to water in the container?",
+    options: {
+      A: "121 : 59",
+      B: "8 : 5",
+      C: "105 : 65",
+      D: "115 : 65"
+    },
+    correctAnswer: "A",
+    explanation: "Equal volumes: take LCM of sum of ratio terms (3, 4, 5) = 60 liters per glass.\nGlass 1 (2:1): Milk = 40, Water = 20.\nGlass 2 (3:1): Milk = 45, Water = 15.\nGlass 3 (3:2): Milk = 36, Water = 24.\nTotal Milk = 40 + 45 + 36 = 121; Total Water = 20 + 15 + 24 = 59.\nRatio = 121 : 59.",
+    memoryTrick: "🧠 Equal Volume LCM: Pick total volume = LCM(3, 4, 5) = 60. Then scale each integer component: 40+45+36 = 121 vs 20+15+24 = 59."
+  },
+  {
+    id: "RAT-021",
+    topic: "Ratio & Proportion",
+    question: "If (x : y) = 3 : 4, what is the value of (7x + 3y) : (7x - 3y)?",
+    options: {
+      A: "5 : 2",
+      B: "11 : 3",
+      C: "33 : 9",
+      D: "11 : 2"
+    },
+    correctAnswer: "B",
+    explanation: "Substitute x = 3, y = 4 directly:\nNumerator = 7(3) + 3(4) = 21 + 12 = 33.\nDenominator = 7(3) - 3(4) = 21 - 12 = 9.\nRatio = 33 / 9 = 11 / 3.",
+    memoryTrick: "🧠 Direct Substitution: When homogeneous in degree 1, plug ratio values straight in: (21+12)/(21-12) = 33/9 = 11/3."
+  },
+  {
+    id: "RAT-022",
+    topic: "Ratio & Proportion",
+    question: "The ratio of boys to girls in a school of 720 students is 7 : 5. How many more girls must be admitted to make the ratio 1 : 1?",
+    options: {
+      A: "90",
+      B: "100",
+      C: "120",
+      D: "140"
+    },
+    correctAnswer: "C",
+    explanation: "Total parts = 7 + 5 = 12 parts.\n1 part = 720 / 12 = 60.\nBoys = 7 × 60 = 420; Girls = 5 × 60 = 300.\nTo make ratio 1 : 1, girls must equal boys (420).\nGirls to admit = 420 - 300 = 120.",
+    memoryTrick: "🧠 Deficit parts: Boys have 7 parts, girls have 5 parts. Gap = 2 parts. 2 × 60 = 120 girls needed."
+  },
+  {
+    id: "RAT-023",
+    topic: "Ratio & Proportion",
+    question: "If A : B = 5 : 7 and B : C = 6 : 11, then what is A : B : C?",
+    options: {
+      A: "30 : 42 : 77",
+      B: "35 : 42 : 77",
+      C: "30 : 49 : 77",
+      D: "25 : 35 : 55"
+    },
+    correctAnswer: "A",
+    explanation: "Make B equal: LCM of 7 and 6 is 42.\nA : B = (5 × 6) : (7 × 6) = 30 : 42.\nB : C = (6 × 7) : (11 × 7) = 42 : 77.\nTherefore, A : B : C = 30 : 42 : 77.",
+    memoryTrick: "🧠 Cross N-Shape: Multiply down (5×6=30), diagonal (7×6=42), down (7×11=77) → 30 : 42 : 77."
+  },
+  {
+    id: "RAT-024",
+    topic: "Ratio & Proportion",
+    question: "A sum of Rs. 4,200 is divided among A, B, and C such that A : B = 2 : 3 and B : C = 4 : 5. How much does C receive?",
+    options: {
+      A: "Rs. 1,200",
+      B: "Rs. 1,800",
+      C: "Rs. 1,500",
+      D: "Rs. 960"
+    },
+    correctAnswer: "B",
+    explanation: "A : B : C = (2×4) : (3×4) : (3×5) = 8 : 12 : 15.\nTotal parts = 8 + 12 + 15 = 35 parts.\n1 part = 4,200 / 35 = 120.\nC's share = 15 parts = 15 × 120 = Rs. 1,800.",
+    memoryTrick: "🧠 Combined Ratio: 8 : 12 : 15. C gets 15/35 = 3/7 of total. 3/7 × 4200 = 3 × 600 = Rs. 1800."
+  },
+  {
+    id: "RAT-025",
+    topic: "Ratio & Proportion",
+    question: "The sub-duplicate ratio of 64 : 81 is:",
+    options: {
+      A: "8 : 9",
+      B: "4 : 9",
+      C: "512 : 729",
+      D: "16 : 27"
+    },
+    correctAnswer: "A",
+    explanation: "Sub-duplicate ratio of a : b is defined as √a : √b.\nHere, √64 : √81 = 8 : 9.",
+    memoryTrick: "🧠 'Sub' Prefix Rule: 'Sub' indicates fractional root power! Sub-duplicate = square root (√64 : √81 = 8 : 9)."
+  },
+
+  // ==========================================
+  // TOPIC 3: PROFIT & LOSS (PNL-001 to PNL-025)
+  // ==========================================
+  {
+    id: "PNL-001",
+    topic: "Profit & Loss",
+    question: "An article is sold for Rs. 840 at a profit of 20%. What was the cost price of the article?",
+    options: {
+      A: "Rs. 700",
+      B: "Rs. 720",
+      C: "Rs. 680",
+      D: "Rs. 750"
+    },
+    correctAnswer: "A",
+    explanation: "SP = CP × (1 + Profit% / 100) ⇒ 840 = CP × 1.20.\nCP = 840 / 1.20 = Rs. 700.",
+    memoryTrick: "🧠 Reverse Multiplier: Profit 20% = 1.20 multiplier. Always divide SP by (1 + P%) to recover CP: 840 / 1.2 = 700."
+  },
+  {
+    id: "PNL-002",
+    topic: "Profit & Loss",
+    question: "If the cost price of 15 articles is equal to the selling price of 10 articles, what is the profit percentage?",
+    options: {
+      A: "33.33%",
+      B: "50%",
+      C: "40%",
+      D: "25%"
+    },
+    correctAnswer: "B",
+    explanation: "15 × CP = 10 × SP ⇒ SP / CP = 15 / 10 = 3 / 2.\nProfit = SP - CP = 3 - 2 = 1.\nProfit % = (1 / 2) × 100 = 50%.",
+    memoryTrick: "🧠 Articles Rule: Profit % = [(CP articles - SP articles) / SP articles] × 100 = [(15 - 10) / 10] × 100 = 50%."
+  },
+  {
+    id: "PNL-003",
+    topic: "Profit & Loss",
+    question: "A man sells two horses for Rs. 40,000 each. On one he gains 20% and on the other he loses 20%. What is his overall gain or loss percentage?",
+    options: {
+      A: "No profit, no loss",
+      B: "4% loss",
+      C: "4% gain",
+      D: "2% loss"
+    },
+    correctAnswer: "B",
+    explanation: "When two items are sold at the same SP, one at a gain of x% and the other at a loss of x%, there is always an overall loss.\nOverall Loss % = (x / 10)² % = (20 / 10)² % = 2² % = 4% loss.",
+    memoryTrick: "🧠 Identical SP Theorem: Equal gain & loss on identical selling price ALWAYS yields a net loss of (x/10)² %. Here (20/10)² = 4% loss."
+  },
+  {
+    id: "PNL-004",
+    topic: "Profit & Loss",
+    question: "What single discount is equivalent to two successive discounts of 20% and 10%?",
+    options: {
+      A: "30%",
+      B: "28%",
+      C: "26%",
+      D: "25%"
+    },
+    correctAnswer: "B",
+    explanation: "Equivalent discount = d₁ + d₂ - (d₁ × d₂) / 100.\n= 20 + 10 - (20 × 10) / 100 = 30 - 2 = 28%.\nAlternatively: 100 → 80 → 80 × 0.90 = 72 (discount = 100 - 72 = 28%).",
+    memoryTrick: "🧠 Discount Formula: d = d₁ + d₂ - (d₁d₂/100). Add discounts, then subtract their product over 100: 30 - 2 = 28%."
+  },
+  {
+    id: "PNL-005",
+    topic: "Profit & Loss",
+    question: "A dishonest dealer professes to sell his goods at cost price but uses a weight of 900 grams for a 1 kilogram weight. What is his real gain percentage?",
+    options: {
+      A: "10%",
+      B: "11.11%",
+      C: "12.5%",
+      D: "9.09%"
+    },
+    correctAnswer: "B",
+    explanation: "Gain % = [Error / (True Value - Error)] × 100.\nError = 1000g - 900g = 100g.\nGain % = (100 / 900) × 100 = (1 / 9) × 100 = 11.11%.",
+    memoryTrick: "🧠 False Weight Rule: Gain % = (Cheated / Delivered) × 100. Delivered is 900g, cheated 100g ⇒ 100/900 = 1/9 = 11.11%."
+  },
+  {
+    id: "PNL-006",
+    topic: "Profit & Loss",
+    question: "A shopkeeper marks his goods 40% above the cost price and allows a discount of 10% on the marked price. What is his profit percentage?",
+    options: {
+      A: "26%",
+      B: "30%",
+      C: "28%",
+      D: "24%"
+    },
+    correctAnswer: "A",
+    explanation: "Let CP = 100. Then MP = 140.\nDiscount = 10% of 140 = 14.\nSP = 140 - 14 = 126.\nProfit = 126 - 100 = 26%.",
+    memoryTrick: "🧠 Multiplier Cascade: SP = CP × (1 + Markup) × (1 - Discount) = 1.40 × 0.90 = 1.26 ⇒ exactly 26% profit."
+  },
+  {
+    id: "PNL-007",
+    topic: "Profit & Loss",
+    question: "A promotional offer says 'Buy 3, Get 1 Free'. What is the effective discount percentage offered to the customer?",
+    options: {
+      A: "33.33%",
+      B: "25%",
+      C: "20%",
+      D: "30%"
+    },
+    correctAnswer: "B",
+    explanation: "Customer gets 3 + 1 = 4 articles in total, but pays for only 3.\nDiscount = 1 article out of 4.\nEffective discount % = (Free Articles / Total Articles) × 100 = (1 / 4) × 100 = 25%.",
+    memoryTrick: "🧠 'Buy X Get Y' Rule: Discount % = [Y / (X + Y)] × 100. Here: [1 / (3 + 1)] × 100 = 25%."
+  },
+  {
+    id: "PNL-008",
+    topic: "Profit & Loss",
+    question: "By selling an item for Rs. 250 more, a loss of 5% is converted into a profit of 15%. What is the cost price of the item?",
+    options: {
+      A: "Rs. 1,000",
+      B: "Rs. 1,250",
+      C: "Rs. 1,500",
+      D: "Rs. 1,200"
+    },
+    correctAnswer: "B",
+    explanation: "Gap in percentage = Profit% - (-Loss%) = 15% - (-5%) = 20%.\n20% of CP = Rs. 250.\nCP = 250 / 0.20 = 250 × 5 = Rs. 1,250.",
+    memoryTrick: "🧠 Profit-Loss Gap: Switch from -5% to +15% is a jump of 20%. 20% = 250 ⇒ 100% = 250 × 5 = Rs. 1,250."
+  },
+  {
+    id: "PNL-009",
+    topic: "Profit & Loss",
+    question: "A sells an item to B at a profit of 20%, and B sells it to C at a profit of 10%. If C pays Rs. 264 for it, how much did A pay for it?",
+    options: {
+      A: "Rs. 200",
+      B: "Rs. 210",
+      C: "Rs. 220",
+      D: "Rs. 225"
+    },
+    correctAnswer: "A",
+    explanation: "Let A's cost = C.\nC × 1.20 × 1.10 = 264.\nC × 1.32 = 264 ⇒ C = 264 / 1.32 = Rs. 200.",
+    memoryTrick: "🧠 Reverse Chaining: Effective multiplier = 1.2 × 1.1 = 1.32. A's cost = 264 / 1.32 = Rs. 200."
+  },
+  {
+    id: "PNL-010",
+    topic: "Profit & Loss",
+    question: "A trader calculates his profit percentage on the selling price and finds it to be 20%. What is his actual profit percentage calculated on cost price?",
+    options: {
+      A: "16.67%",
+      B: "20%",
+      C: "25%",
+      D: "30%"
+    },
+    correctAnswer: "C",
+    explanation: "Let SP = 100. Profit = 20% of 100 = 20.\nCP = SP - Profit = 100 - 20 = 80.\nActual Profit % on CP = (20 / 80) × 100 = (1 / 4) × 100 = 25%.",
+    memoryTrick: "🧠 Base Conversion: Profit 20% on SP = 1/5 of SP. Then on CP it is 1/(5 - 1) = 1/4 = 25%."
+  },
+  {
+    id: "PNL-011",
+    topic: "Profit & Loss",
+    question: "By selling 33 meters of cloth, a merchant gains the selling price of 11 meters. What is his gain percentage?",
+    options: {
+      A: "33.33%",
+      B: "50%",
+      C: "25%",
+      D: "40%"
+    },
+    correctAnswer: "B",
+    explanation: "Gain = SP of 11 meters = SP of 33 - CP of 33.\nCP of 33 = SP of 22 ⇒ SP / CP = 33 / 22 = 3 / 2.\nGain % = (1 / 2) × 100 = 50%.",
+    memoryTrick: "🧠 Gain in SP formula: Gain % = [Gained SP / (Sold - Gained SP)] × 100 = (11 / 22) × 100 = 50%."
+  },
+  {
+    id: "PNL-012",
+    topic: "Profit & Loss",
+    question: "A merchant bought 100 kg of sugar, part of which he sold at 8% profit and the rest at 18% profit. Overall, he gained 14% on the whole. How much sugar was sold at 18% profit?",
+    options: {
+      A: "40 kg",
+      B: "50 kg",
+      C: "60 kg",
+      D: "70 kg"
+    },
+    correctAnswer: "C",
+    explanation: "Using Rule of Alligation:\nRatio (8% to 18%) = |18 - 14| : |14 - 8| = 4 : 6 = 2 : 3.\nTotal parts = 2 + 3 = 5 parts.\nSugar at 18% = (3 / 5) × 100 = 60 kg.",
+    memoryTrick: "🧠 Alligation Cross: (18 - 14) : (14 - 8) = 4 : 6 = 2 : 3. Sugar at 18% is 3/(2+3) = 3/5 of 100 = 60 kg."
+  },
+  {
+    id: "PNL-013",
+    topic: "Profit & Loss",
+    question: "A merchant allows a 10% discount on marked price and still earns a 20% profit. If the cost price of the article is Rs. 450, what is its marked price?",
+    options: {
+      A: "Rs. 550",
+      B: "Rs. 600",
+      C: "Rs. 650",
+      D: "Rs. 580"
+    },
+    correctAnswer: "B",
+    explanation: "Formula: MP / CP = (100 + Profit%) / (100 - Discount%).\nMP / 450 = (100 + 20) / (100 - 10) = 120 / 90 = 4 / 3.\nMP = 450 × (4 / 3) = 600.",
+    memoryTrick: "🧠 MP-CP Golden Ratio: MP/CP = (100 + P%)/(100 - D%) = 120/90 = 4/3. MP = 450 × 4/3 = Rs. 600."
+  },
+  {
+    id: "PNL-014",
+    topic: "Profit & Loss",
+    question: "A person sells a table at a profit of 10%. If he had bought it at 10% less and sold it for Rs. 10 more, he would have gained 25%. What is the cost price of the table?",
+    options: {
+      A: "Rs. 350",
+      B: "Rs. 400",
+      C: "Rs. 450",
+      D: "Rs. 500"
+    },
+    correctAnswer: "B",
+    explanation: "Let CP = 100x. Initial SP = 110x.\nNew hypothetical CP = 90x.\nNew hypothetical SP = 90x × 1.25 = 112.5x.\nDifference in SP = 112.5x - 110x = 2.5x = 10.\nx = 10 / 2.5 = 4 ⇒ CP = 100x = Rs. 400.",
+    memoryTrick: "🧠 Double Hypothesis Method: 100 → 110. Drop CP to 90 → +25% = 112.5. The difference 2.5% = Rs. 10 ⇒ 100% = Rs. 400."
+  },
+  {
+    id: "PNL-015",
+    topic: "Profit & Loss",
+    question: "A vendor buys lemons at 6 for Rs. 10 and sells them at 4 for Rs. 10. What is his profit percentage?",
+    options: {
+      A: "40%",
+      B: "50%",
+      C: "60%",
+      D: "33.33%"
+    },
+    correctAnswer: "B",
+    explanation: "CP per lemon = 10 / 6 = Rs. 5/3.\nSP per lemon = 10 / 4 = Rs. 5/2.\nProfit % = [(SP - CP) / CP] × 100 = [(5/2 - 5/3) / (5/3)] × 100 = [(1/6) / (1/3)] × 100 = 50%.",
+    memoryTrick: "🧠 Cross Quantity-Price Trick: Cross multiply (Buying Qty × Selling Price - Selling Qty × Buying Price) / (Selling Qty × Buying Price) = (6×10 - 4×10)/(4×10) = 20/40 = 50%."
+  },
+  {
+    id: "PNL-016",
+    topic: "Profit & Loss",
+    question: "If an article is sold at 19% loss, and its price is increased by Rs. 120, it turns into a 5% gain. What is the selling price to earn 20% profit?",
+    options: {
+      A: "Rs. 500",
+      B: "Rs. 600",
+      C: "Rs. 550",
+      D: "Rs. 650"
+    },
+    correctAnswer: "B",
+    explanation: "Total % jump = 19% + 5% = 24%.\n24% of CP = 120 ⇒ CP = 120 / 0.24 = Rs. 500.\nTarget SP for 20% profit = 500 × 1.20 = Rs. 600.",
+    memoryTrick: "🧠 Two-Step Jump: 24% = 120 ⇒ CP = 500. Then 20% profit on 500 is 100 ⇒ Target SP = Rs. 600."
+  },
+  {
+    id: "PNL-017",
+    topic: "Profit & Loss",
+    question: "A dishonest shopkeeper sells goods using a faulty balance that reads 1,200 grams for every 1,000 grams placed on it. If he claims to sell at 10% discount on CP, what is his actual profit %?",
+    options: {
+      A: "8%",
+      B: "10%",
+      C: "12%",
+      D: "15%"
+    },
+    correctAnswer: "A",
+    explanation: "Effective multiplier = (Goods charged / Goods given) × (Price charged / Cost).\nCharged = 1.2 times weight; Discount = 0.90.\nNet factor = 1.20 × 0.90 = 1.08.\nProfit = (1.08 - 1) × 100 = 8%.",
+    memoryTrick: "🧠 Product of Multipliers: Multiplier = (False/True) × (1 - Disc) = (1.20) × (0.90) = 1.08 ⇒ 8% net profit."
+  },
+  {
+    id: "PNL-018",
+    topic: "Profit & Loss",
+    question: "A shopkeeper gives two successive discounts of 10% and 20% on an article marked at Rs. 500. What is the selling price?",
+    options: {
+      A: "Rs. 350",
+      B: "Rs. 360",
+      C: "Rs. 370",
+      D: "Rs. 340"
+    },
+    correctAnswer: "B",
+    explanation: "SP = MP × (1 - d₁) × (1 - d₂).\nSP = 500 × 0.90 × 0.80 = 500 × 0.72 = Rs. 360.",
+    memoryTrick: "🧠 Compounded Discount Multiplier: 0.9 × 0.8 = 0.72. 500 × 0.72 = Rs. 360."
+  },
+  {
+    id: "PNL-019",
+    topic: "Profit & Loss",
+    question: "Profit earned by selling an article for Rs. 832 is equal to the loss incurred when the same article is sold for Rs. 448. What should be the selling price for making 50% profit?",
+    options: {
+      A: "Rs. 920",
+      B: "Rs. 960",
+      C: "Rs. 980",
+      D: "Rs. 1,000"
+    },
+    correctAnswer: "B",
+    explanation: "Since Profit = Loss, CP is the exact arithmetic mean of both SPs:\nCP = (832 + 448) / 2 = 1,280 / 2 = Rs. 640.\nTarget SP for 50% profit = 640 × 1.50 = Rs. 960.",
+    memoryTrick: "🧠 Equal Profit/Loss Midpoint: CP = (SP₁ + SP₂) / 2 = 1280 / 2 = 640. Then 640 + 320 = Rs. 960."
+  },
+  {
+    id: "PNL-020",
+    topic: "Profit & Loss",
+    question: "A retailer buys 20 kg of apples at Rs. 40/kg and 30 kg at Rs. 50/kg. He mixes them and sells the entire lot at Rs. 55/kg. What is his profit percentage?",
+    options: {
+      A: "18.5%",
+      B: "19.56%",
+      C: "21.25%",
+      D: "22%"
+    },
+    correctAnswer: "B",
+    explanation: "Total CP = (20 × 40) + (30 × 50) = 800 + 1,500 = Rs. 2,300.\nTotal SP = (20 + 30) × 55 = 50 × 55 = Rs. 2,750.\nProfit = 2,750 - 2,300 = Rs. 450.\nProfit % = (450 / 2,300) × 100 = 19.56%.",
+    memoryTrick: "🧠 Weighted Average CP: (800 + 1500) / 50 = 2300 / 50 = Rs. 46/kg. SP = 55. Profit % = (9/46) × 100 ≈ 19.56%."
+  },
+  {
+    id: "PNL-021",
+    topic: "Profit & Loss",
+    question: "If a shopkeeper sells 1/3 of his goods at 15% profit, 1/3 at 12% profit, and the remaining 1/3 at 6% loss, what is his overall profit percentage?",
+    options: {
+      A: "7%",
+      B: "8%",
+      C: "9%",
+      D: "10%"
+    },
+    correctAnswer: "A",
+    explanation: "Average profit % = (1/3 × 15%) + (1/3 × 12%) + [1/3 × (-6%)].\n= 5% + 4% - 2% = 7% overall profit.",
+    memoryTrick: "🧠 Weighted Average Shortcut: Equal thirds mean direct arithmetic average of rates: (15 + 12 - 6) / 3 = 21 / 3 = 7%."
+  },
+  {
+    id: "PNL-022",
+    topic: "Profit & Loss",
+    question: "By selling an article for Rs. 144, the numerical value of the profit percentage is equal to its cost price in rupees. What is the cost price?",
+    options: {
+      A: "Rs. 70",
+      B: "Rs. 80",
+      C: "Rs. 90",
+      D: "Rs. 85"
+    },
+    correctAnswer: "B",
+    explanation: "SP = CP + (CP × CP / 100) = 144.\nCP² + 100CP - 14,400 = 0 ⇒ (CP + 180)(CP - 80) = 0 ⇒ CP = 80.\nCheck: 80 + 80% of 80 = 80 + 64 = 144.",
+    memoryTrick: "🧠 Vedic Formula: CP = 10 × √(25 + SP) - 50. Here: 10 × √(25 + 144) - 50 = 10 × 13 - 50 = 80."
+  },
+  {
+    id: "PNL-023",
+    topic: "Profit & Loss",
+    question: "An item is marked at Rs. 800. After allowing two successive equal discounts of x%, the selling price is Rs. 512. What is the value of x?",
+    options: {
+      A: "15%",
+      B: "18%",
+      C: "20%",
+      D: "22%"
+    },
+    correctAnswer: "C",
+    explanation: "800 × (1 - x/100)² = 512.\n(1 - x/100)² = 512 / 800 = 64 / 100 = 0.64.\n1 - x/100 = √0.64 = 0.80 ⇒ x = 20%.",
+    memoryTrick: "🧠 Square Root Ratio: Ratio of SP/MP = 512/800 = 0.64. Single stage factor = √0.64 = 0.80 ⇒ Discount is 20%."
+  },
+  {
+    id: "PNL-024",
+    topic: "Profit & Loss",
+    question: "A merchant buys 80 items for Rs. 2,400. 10 items are damaged during transit. At what price per item must he sell the remaining to gain 20% on the entire transaction?",
+    options: {
+      A: "Rs. 40",
+      B: "Rs. 41.14",
+      C: "Rs. 42",
+      D: "Rs. 45"
+    },
+    correctAnswer: "B",
+    explanation: "Total target revenue = 2,400 × 1.20 = Rs. 2,880.\nRemaining saleable items = 80 - 10 = 70 items.\nSelling price per item = 2,880 / 70 = Rs. 41.14 per item.",
+    memoryTrick: "🧠 Target Recovery: Target revenue = 1.2 × CP = Rs. 2,880. Divide by remaining stock (70) = Rs. 41.14."
+  },
+  {
+    id: "PNL-025",
+    topic: "Profit & Loss",
+    question: "A dealer sells an article at 6% loss. If he had sold it for Rs. 64 more, he would have gained 10%. What is the cost price?",
+    options: {
+      A: "Rs. 350",
+      B: "Rs. 380",
+      C: "Rs. 400",
+      D: "Rs. 420"
+    },
+    correctAnswer: "C",
+    explanation: "The percentage difference = 10% - (-6%) = 16%.\n16% of CP = Rs. 64.\nCP = 64 / 0.16 = Rs. 400.",
+    memoryTrick: "🧠 Direct Span: -6% to +10% is 16%. 16% = 64 ⇒ 1% = 4 ⇒ 100% = Rs. 400."
+  },
+
+  // ==========================================
+  // TOPIC 4: DSA (DSA-001 to DSA-025)
+  // ==========================================
+  {
+    id: "DSA-001",
+    topic: "DSA",
+    question: "What is the optimal time and space complexity to find two numbers in an unsorted array of size N that add up to a specific target sum?",
+    options: {
+      A: "O(N log N) time, O(1) space",
+      B: "O(N) time, O(N) space",
+      C: "O(N²) time, O(1) space",
+      D: "O(N) time, O(1) space"
+    },
+    correctAnswer: "B",
+    explanation: "By utilizing a Hash Table, each element's complement (target - num) can be looked up in O(1) average time during a single pass.\nTotal time = O(N), Space complexity = O(N) to store visited numbers in the hash table.",
+    memoryTrick: "🧠 Trade Memory for Time: Store (target - x) in a Hash Map. One loop pass = O(N) time + O(N) space."
+  },
+  {
+    id: "DSA-002",
+    topic: "DSA",
+    question: "In Floyd's Cycle-Finding Algorithm (Tortoise and Hare) for linked lists, what are the time and auxiliary space complexities?",
+    options: {
+      A: "O(N) time and O(N) space",
+      B: "O(N log N) time and O(1) space",
+      C: "O(N) time and O(1) space",
+      D: "O(1) time and O(N) space"
+    },
+    correctAnswer: "C",
+    explanation: "The slow pointer moves 1 step and fast pointer moves 2 steps per iteration.\nIf a loop exists, fast catches slow within one cycle length in O(N) time without allocating any extra nodes (O(1) auxiliary space).",
+    memoryTrick: "🧠 Two Pointers, Zero Allocations: Fast moves 2x, Slow moves 1x. Gap shrinks by 1 step each tick → O(N) time, O(1) space."
+  },
+  {
+    id: "DSA-003",
+    topic: "DSA",
+    question: "What is the result of performing an Inorder Traversal (Left, Root, Right) on a valid Binary Search Tree (BST)?",
+    options: {
+      A: "Nodes visited in level-by-level breadth order",
+      B: "Nodes visited in strictly descending order",
+      C: "Nodes visited in strictly ascending sorted order",
+      D: "Nodes visited in topological order"
+    },
+    correctAnswer: "C",
+    explanation: "By definition, for any BST node: Left < Root < Right.\nInorder traversal recursively processes Left subtree, then Root, then Right subtree, producing values in non-decreasing (ascending) sorted order.",
+    memoryTrick: "🧠 Inorder = In-Order: 'Inorder' of a BST puts the keys literally 'in order' (sorted ascending)."
+  },
+  {
+    id: "DSA-004",
+    topic: "DSA",
+    question: "Which data structure enables implementing a 'MinStack' where push(), pop(), top(), and getMin() all operate in O(1) time?",
+    options: {
+      A: "A single balanced AVL tree",
+      B: "A standard stack paired with an auxiliary min-tracking stack",
+      C: "A max-heap",
+      D: "A circular queue"
+    },
+    correctAnswer: "B",
+    explanation: "An auxiliary stack maintains the current minimum at each level of the main stack.\nWhenever an element ≤ current min is pushed, it is also pushed to the min-stack, enabling getMin() to peek in O(1) time.",
+    memoryTrick: "🧠 Parallel Shadow Stack: Push min to a shadow stack when a new low arrives. Both stacks pop together → O(1) everywhere."
+  },
+  {
+    id: "DSA-005",
+    topic: "DSA",
+    question: "Which classic data structure is most appropriate for validating matching and properly nested opening and closing parentheses?",
+    options: {
+      A: "Queue (FIFO)",
+      B: "Stack (LIFO)",
+      C: "Priority Queue",
+      D: "Hash Table"
+    },
+    correctAnswer: "B",
+    explanation: "The most recently opened parenthesis must be the first one closed (Last-In, First-Out behavior).\nA Stack allows pushing opening brackets and popping them when the matching closing bracket is encountered.",
+    memoryTrick: "🧠 Last-Opened, First-Closed: Nested problems are fundamentally LIFO → Always reach for a Stack."
+  },
+  {
+    id: "DSA-006",
+    topic: "DSA",
+    question: "Under which condition does standard Dijkstra's algorithm fail to compute the shortest path?",
+    options: {
+      A: "On directed acyclic graphs (DAG)",
+      B: "When the graph contains negative edge weights",
+      C: "When the graph is disconnected",
+      D: "When the graph has cycles with positive weights"
+    },
+    correctAnswer: "B",
+    explanation: "Dijkstra is a greedy algorithm that assumes visited nodes have finalized minimum distances.\nNegative edge weights violate this assumption because a previously visited vertex's distance could be reduced via a negative edge later.",
+    memoryTrick: "🧠 Dijkstra Hates Negatives: Greedy choice locks in node distance forever. Negative edges break this guarantee (use Bellman-Ford instead)."
+  },
+  {
+    id: "DSA-007",
+    topic: "DSA",
+    question: "What is the worst-case time complexity of inserting a new element into a binary max-heap of size N?",
+    options: {
+      A: "O(1)",
+      B: "O(log N)",
+      C: "O(N)",
+      D: "O(N log N)"
+    },
+    correctAnswer: "B",
+    explanation: "The new element is appended at the bottom level of the complete binary tree and then bubbled up (heapified up).\nThe height of a complete binary tree of size N is ⌊log₂ N⌋, so at most log N swaps are performed.",
+    memoryTrick: "🧠 Bubble Up Height: A heap has height log₂ N. Elements can bubble up at most tree height = O(log N)."
+  },
+  {
+    id: "DSA-008",
+    topic: "DSA",
+    question: "What is the time complexity of building a binary heap from an arbitrary unsorted array of N elements using bottom-up heapify?",
+    options: {
+      A: "O(N log N)",
+      B: "O(N)",
+      C: "O(N²)",
+      D: "O(log N)"
+    },
+    correctAnswer: "B",
+    explanation: "Bottom-up build heap sums the work across heights h: ∑ (N / 2^(h+1)) × O(h) for h=0 to log N.\nThis bounded geometric-arithmetic series converges to O(N), proving linear time building.",
+    memoryTrick: "🧠 Heapify Down is Linear: Most nodes are near the leaves and do almost 0 work. Bottom-up BuildHeap = O(N)!"
+  },
+  {
+    id: "DSA-009",
+    topic: "DSA",
+    question: "What is the worst-case time complexity of standard QuickSort when the first or last element is always chosen as pivot on an already sorted array?",
+    options: {
+      A: "O(N log N)",
+      B: "O(N²)",
+      C: "O(N)",
+      D: "O(2^N)"
+    },
+    correctAnswer: "B",
+    explanation: "If the pivot is always the extreme minimum or maximum, partitions are severely unbalanced (sizes 0 and N - 1).\nThe recurrence relation becomes T(N) = T(N - 1) + O(N) = N + (N-1) + ... + 1 = O(N²).",
+    memoryTrick: "🧠 Skewed QuickSort: Worst pivot splits array into (0, N-1). Sum of 1 to N = N(N+1)/2 = O(N²)."
+  },
+  {
+    id: "DSA-010",
+    topic: "DSA",
+    question: "Which sorting algorithm guarantees O(N log N) worst-case time complexity, is stable, but requires O(N) auxiliary space?",
+    options: {
+      A: "QuickSort",
+      B: "HeapSort",
+      C: "MergeSort",
+      D: "BubbleSort"
+    },
+    correctAnswer: "C",
+    explanation: "MergeSort divides the array into halves recursively (log N levels) and merges sorted sub-arrays in O(N) time at each level.\nMerging identical elements maintains their relative original order (stable), but standard array merge requires an O(N) buffer.",
+    memoryTrick: "🧠 The MergeSort Trio: Guaranteed O(N log N) + Stable + Auxiliary O(N) buffer for merging."
+  },
+  {
+    id: "DSA-011",
+    topic: "DSA",
+    question: "What is the time complexity of finding the maximum subarray sum using Kadane's Algorithm?",
+    options: {
+      A: "O(N²)",
+      B: "O(N log N)",
+      C: "O(N)",
+      D: "O(1)"
+    },
+    correctAnswer: "C",
+    explanation: "Kadane's algorithm maintains current_max = max(num, current_max + num) and global_max at each index.\nIt inspects each array element exactly once in a single linear pass with O(1) auxiliary variables, yielding O(N) time.",
+    memoryTrick: "🧠 Kadane's Motto: 'Extend or Start Fresh': current = max(x, current + x). Exactly one pass → O(N) time."
+  },
+  {
+    id: "DSA-012",
+    topic: "DSA",
+    question: "Why can the 0/1 Knapsack problem NOT be solved optimally using a greedy approach, whereas Fractional Knapsack can?",
+    options: {
+      A: "0/1 Knapsack has no overlapping subproblems",
+      B: "Items cannot be divided into fractional amounts, preventing greedy density packing",
+      C: "Fractional Knapsack requires exponential space",
+      D: "Greedy algorithms cannot compare value-to-weight ratios"
+    },
+    correctAnswer: "B",
+    explanation: "In 0/1 Knapsack, an item must be chosen whole or left behind.\nA high-density item might leave empty unusable capacity, meaning greedy density selection misses the optimal combination (requires DP O(N×W)).",
+    memoryTrick: "🧠 Whole vs Broken: You can't break items in 0/1 knapsack, so taking the greedy ratio may leave dead space. Use DP!"
+  },
+  {
+    id: "DSA-013",
+    topic: "DSA",
+    question: "In an AVL tree, what is the valid range for the balance factor (Height of Left Subtree - Height of Right Subtree) of any node?",
+    options: {
+      A: "{0}",
+      B: "{-1, 0, 1}",
+      C: "{-2, 0, 2}",
+      D: "Any integer ≤ 1"
+    },
+    correctAnswer: "B",
+    explanation: "An AVL tree is a strictly height-balanced BST.\nFor every node, the heights of the two child subtrees can differ by at most 1: Balance Factor ∈ {-1, 0, 1}.\nIf difference reaches ±2, rotations are triggered.",
+    memoryTrick: "🧠 AVL ±1 Rule: Heights never differ by more than 1: {-1, 0, +1}. Anything else triggers a rotation."
+  },
+  {
+    id: "DSA-014",
+    topic: "DSA",
+    question: "What is the asymptotic time complexity of the recurrence relation T(N) = 2T(N/2) + O(N) according to the Master Theorem?",
+    options: {
+      A: "O(N)",
+      B: "O(N log N)",
+      C: "O(N²)",
+      D: "O(log N)"
+    },
+    correctAnswer: "B",
+    explanation: "Here a = 2, b = 2, f(N) = O(N).\nlog_b(a) = log₂(2) = 1, so N^(log_b a) = N¹ = O(N).\nSince f(N) = Θ(N¹), this falls into Master Theorem Case 2: T(N) = Θ(N^(log_b a) × log N) = O(N log N).",
+    memoryTrick: "🧠 MergeSort Recurrence: 2 subproblems of half size + linear work = classic O(N log N)."
+  },
+  {
+    id: "DSA-015",
+    topic: "DSA",
+    question: "Topological Sorting can only be performed on which type of graph?",
+    options: {
+      A: "Any undirected graph",
+      B: "Directed Acyclic Graph (DAG)",
+      C: "Complete Graph with cycles",
+      D: "Bipartite graph with negative weights"
+    },
+    correctAnswer: "B",
+    explanation: "A topological sort orders vertices linearly such that for every directed edge u → v, vertex u comes before v.\nIf a cycle exists (u → v → u), neither can come before the other, so the graph must be Directed and Acyclic (DAG).",
+    memoryTrick: "🧠 No Cycles in Dependency: You can't graduate before passing prerequisites! Topological sort demands a DAG."
+  },
+  {
+    id: "DSA-016",
+    topic: "DSA",
+    question: "Which graph traversal guarantees finding the shortest path between two vertices in an unweighted graph?",
+    options: {
+      A: "Depth-First Search (DFS)",
+      B: "Breadth-First Search (BFS)",
+      C: "Pre-order Traversal",
+      D: "Kruskal's Algorithm"
+    },
+    correctAnswer: "B",
+    explanation: "BFS explores vertices in order of their hop distance (level-by-level) from the start vertex.\nThe first time the target vertex is visited, the path taken is guaranteed to have the minimum possible number of edges.",
+    memoryTrick: "🧠 Ripples in Water: BFS ripples outward level by level. The first time you touch target = shortest path."
+  },
+  {
+    id: "DSA-017",
+    topic: "DSA",
+    question: "In hash collision resolution via open addressing, what is the primary disadvantage of Linear Probing?",
+    options: {
+      A: "Requires O(N) auxiliary memory pointers",
+      B: "Susceptible to Primary Clustering where long runs of occupied slots form",
+      C: "Cannot handle dynamic resizing",
+      D: "Requires a balanced binary tree"
+    },
+    correctAnswer: "B",
+    explanation: "Linear probing inspects slot (hash + i) mod table_size.\nWhen collisions occur, adjacent filled slots coalesce into contiguous blocks ('primary clustering'), degrading future probe sequences to O(N).",
+    memoryTrick: "🧠 Linear Probing Clusters: Next-door neighbors pack together into long traffic jams (Primary Clustering)."
+  },
+  {
+    id: "DSA-018",
+    topic: "DSA",
+    question: "Which pair of data structures is commonly combined to implement an LRU (Least Recently Used) Cache with O(1) get() and put() operations?",
+    options: {
+      A: "Binary Search Tree + Array",
+      B: "Hash Map + Doubly Linked List",
+      C: "Queue + Min-Heap",
+      D: "Stack + Hash Set"
+    },
+    correctAnswer: "B",
+    explanation: "The Hash Map maps keys to nodes in O(1) time.\nThe Doubly Linked List allows moving any accessed node to the front (most recent) and evicting the tail node (least recent) in O(1) time without shifting elements.",
+    memoryTrick: "🧠 Hash for Lookup, Doubly-Linked for Order: Hash Map gives O(1) find; Doubly Linked List gives O(1) splice/move."
+  },
+  {
+    id: "DSA-019",
+    topic: "DSA",
+    question: "What is the time complexity to search for a word of length L in a Trie (Prefix Tree) containing N total words?",
+    options: {
+      A: "O(N × L)",
+      B: "O(log N)",
+      C: "O(L)",
+      D: "O(N + L)"
+    },
+    correctAnswer: "C",
+    explanation: "In a Trie, each character of the word corresponds to one edge traversal from root to leaf.\nSearching a word of length L requires traversing exactly L character edges, completely independent of how many total words N are in the Trie (O(L) time).",
+    memoryTrick: "🧠 Length Bound, Word Count Free: You only walk L letters down the tree. Total words N doesn't matter → O(L)."
+  },
+  {
+    id: "DSA-020",
+    topic: "DSA",
+    question: "What is the time and space complexity to find the K-th largest element in an unsorted stream of N numbers using a Min-Heap?",
+    options: {
+      A: "O(N log K) time, O(K) space",
+      B: "O(N log N) time, O(N) space",
+      C: "O(K log N) time, O(1) space",
+      D: "O(N) time, O(N) space"
+    },
+    correctAnswer: "A",
+    explanation: "Maintain a min-heap of size K.\nFor each of the N elements, if element > min-heap root, push and pop: heap operations take O(log K).\nTotal time = O(N log K); heap stores only K elements = O(K) space.",
+    memoryTrick: "🧠 K-Sized Gatekeeper: Keep K largest in a Min-Heap. The root is the K-th largest. Size stays K → O(N log K) time, O(K) space."
+  },
+  {
+    id: "DSA-021",
+    topic: "DSA",
+    question: "What is the amortized time complexity of appending an element to a dynamic resizing array (like std::vector in C++ or ArrayList in Java)?",
+    options: {
+      A: "O(N)",
+      B: "O(log N)",
+      C: "O(1)",
+      D: "O(1/N)"
+    },
+    correctAnswer: "C",
+    explanation: "Although doubling the array capacity takes O(N) work to copy elements, resizing happens infrequently (at powers of 2).\nOver N append operations, total copying work is N + N/2 + N/4 + ... ≈ 2N.\nAmortized work per append = 2N / N = O(1).",
+    memoryTrick: "🧠 Geometric Savings: Costly doublings are rare. Total work across N appends is 2N → Amortized O(1)."
+  },
+  {
+    id: "DSA-022",
+    topic: "DSA",
+    question: "In a Binary Search Tree, how can you find the Lowest Common Ancestor (LCA) of two given nodes p and q with values p.val < q.val?",
+    options: {
+      A: "Perform a post-order traversal and return the deepest leaf node",
+      B: "Starting at root: if root.val > q.val go left; if root.val < p.val go right; otherwise root is the LCA",
+      C: "Compute BFS distance from root to all leaves",
+      D: "Construct an auxiliary topological sort"
+    },
+    correctAnswer: "B",
+    explanation: "Due to the BST property, the split point where p and q diverge into different subtrees is the LCA.\nIf both values are smaller than root, LCA is in the left subtree. If both are greater, LCA is in the right subtree. Otherwise, current root is the LCA.",
+    memoryTrick: "🧠 The BST Split Point: When values flank current node (p.val ≤ root.val ≤ q.val), you've hit the LCA!"
+  },
+  {
+    id: "DSA-023",
+    topic: "DSA",
+    question: "Which data structure with Path Compression and Union by Rank achieves near-constant amortized time per operation (O(α(N))) for dynamic connectivity?",
+    options: {
+      A: "Segment Tree",
+      B: "Disjoint Set Union (DSU / Union-Find)",
+      C: "Suffix Automaton",
+      D: "Fenwick Tree"
+    },
+    correctAnswer: "B",
+    explanation: "Disjoint Set Union (DSU) maintains partitions of elements.\nWith path compression (flattening tree during find) and union by rank (attaching shallower tree to deeper tree), operations run in O(α(N)) time, where α is the inverse Ackermann function (α(N) < 5 for all practical universe sizes).",
+    memoryTrick: "🧠 DSU / Union-Find: Connect components with inverse Ackermann α(N) — practically O(1) per query."
+  },
+  {
+    id: "DSA-024",
+    topic: "DSA",
+    question: "What is the primary difference between a Stack and a Monotonic Stack?",
+    options: {
+      A: "A Monotonic Stack uses a linked list instead of an array",
+      B: "A Monotonic Stack maintains elements strictly in increasing or decreasing order by popping violators",
+      C: "A Monotonic Stack has O(N²) time complexity for push operations",
+      D: "A Monotonic Stack does not support peek()"
+    },
+    correctAnswer: "B",
+    explanation: "A monotonic stack preserves a sorted property (increasing or decreasing) at all times.\nBefore pushing a new element, existing elements that violate the monotonicity order are popped, making it optimal for 'Next Greater Element' in O(N) time.",
+    memoryTrick: "🧠 Next Greater Element Weapon: Monotonic stacks discard smaller/larger elements immediately. Total pops across all elements ≤ N → O(N)."
+  },
+  {
+    id: "DSA-025",
+    topic: "DSA",
+    question: "What is the time complexity of searching for an element in a balanced 2-3 Tree or Red-Black Tree with N nodes?",
+    options: {
+      A: "O(1)",
+      B: "O(log N)",
+      C: "O(N)",
+      D: "O(N log N)"
+    },
+    correctAnswer: "B",
+    explanation: "Both 2-3 Trees and Red-Black Trees are self-balancing search trees guaranteeing a maximum height of O(log N).\nSearching follows standard binary/multi-way search from root to leaf, traversing at most tree height = O(log N) nodes.",
+    memoryTrick: "🧠 Self-Balancing Height: Balancing rotations keep tree height strictly bounded to O(log N). Search is always O(log N)."
+  }
+];
+
+// Validate questions
+console.log(`Loaded ${questions.length} questions across topics.`);
+const topicCounts = {};
+for (const q of questions) {
+  topicCounts[q.topic] = (topicCounts[q.topic] || 0) + 1;
+  if (!q.id || !q.topic || !q.question || !q.options || !q.correctAnswer || !q.explanation || !q.memoryTrick) {
+    throw new Error(`Invalid question format for ${q.id}`);
+  }
+  if (!['A', 'B', 'C', 'D'].includes(q.correctAnswer)) {
+    throw new Error(`Invalid correct answer for ${q.id}: ${q.correctAnswer}`);
+  }
+  if (!q.options.A || !q.options.B || !q.options.C || !q.options.D) {
+    throw new Error(`Missing option for ${q.id}`);
+  }
+}
+
+console.log('Topic distribution:', topicCounts);
+
+const targetDir = path.join(__dirname, '../src/data');
+if (!fs.existsSync(targetDir)) {
+  fs.mkdirSync(targetDir, { recursive: true });
+}
+
+const outputPath = path.join(targetDir, 'questions.json');
+fs.writeFileSync(outputPath, JSON.stringify(questions, null, 2), 'utf-8');
+console.log(`Successfully generated ${outputPath} with ${questions.length} questions!`);
